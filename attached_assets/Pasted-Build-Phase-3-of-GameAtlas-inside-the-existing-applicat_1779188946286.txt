@@ -1,0 +1,349 @@
+Build Phase 3 of GameAtlas inside the existing application while preserving all existing architecture, auth guards, cinematic transitions, dark futuristic gaming aesthetic, glassmorphism design system, red-black God-of-War-inspired palette, and immersive AAA-quality UI/UX.
+
+IMPORTANT:
+Do NOT redesign existing systems.
+Extend the existing design language consistently.
+
+PHASE 3 GOAL:
+Transform GameAtlas into a living social gaming ecosystem.
+
+Build the following major systems and pages:
+
+1. PROFILE PAGE
+   Route: /profile
+
+Create a highly cinematic gamer profile inspired by:
+
+* Steam profiles
+* PlayStation profiles
+* Discord Nitro aesthetic
+* futuristic cyberpunk gaming interfaces
+
+FEATURES:
+
+A. PROFILE HERO
+
+* animated profile banner
+* glowing avatar frame
+* level/progression badge
+* online/offline status indicator
+* animated gradient overlays
+* floating particles
+* holographic lighting effects
+
+Display:
+
+* username
+* bio
+* linked platforms
+* gamer tags
+* join date
+* favorite genre
+* favorite game
+
+B. GAMING STATS SECTION
+Animated stat cards:
+
+* total playtime
+* games completed
+* achievements unlocked
+* favorite genre
+* multiplayer hours
+* ranking score
+
+Use:
+
+* animated counters
+* glow effects
+* hover motion
+* gradient borders
+
+C. RECENT ACTIVITY TIMELINE
+Create animated activity feed:
+
+* achievements unlocked
+* games played
+* reviews posted
+* favorites added
+* leaderboard rank changes
+
+Timeline should:
+
+* animate on scroll
+* include glowing connectors
+* support icons per activity type
+
+D. FAVORITE GAMES SHOWCASE
+Cinematic horizontal showcase:
+
+* giant game cards
+* hover trailers
+* playtime overlays
+* favorite badges
+
+E. ACHIEVEMENT SHOWCASE
+Display:
+
+* rarest achievements
+* legendary unlocks
+* achievement rarity glow system
+
+2. COMMUNITY HUB
+   Route: /community
+
+Build a futuristic gaming social feed.
+
+FEATURES:
+
+A. COMMUNITY FEED
+Feed should support:
+
+* text posts
+* screenshots
+* clips/videos
+* achievement shares
+* game recommendations
+
+Each post card should include:
+
+* avatar
+* gamer tag
+* timestamp
+* reactions
+* comments
+* share button
+* glowing hover state
+
+Animations:
+
+* smooth feed loading
+* hover depth
+* fade reveals
+* interaction microanimations
+
+B. TRENDING PANEL
+Sidebar containing:
+
+* trending games
+* trending discussions
+* hot clips
+* top creators
+
+C. FEATURED COMMUNITY EVENT
+Large cinematic event banner:
+
+* tournaments
+* seasonal challenges
+* gaming events
+
+3. LEADERBOARDS PAGE
+   Route: /leaderboards
+
+Create an ultra-premium competitive leaderboard experience.
+
+INSPIRED BY:
+
+* esports tournament UI
+* competitive FPS rank screens
+* Destiny/Valorant ranking systems
+
+FEATURES:
+
+A. GLOBAL LEADERBOARD
+Include:
+
+* rank
+* player
+* level
+* achievements
+* score
+* win rate
+* favorite game
+
+Top 3 players:
+
+* giant podium layout
+* glowing animated frames
+* metallic styling
+* floating particles
+* crown effects
+
+B. FILTERS
+Allow filtering by:
+
+* game
+* platform
+* region
+* friends/global
+* timeframe
+
+C. ANIMATED RANK SYSTEM
+Ranks should include:
+
+* bronze
+* silver
+* gold
+* platinum
+* diamond
+* master
+* legendary
+
+Each with:
+
+* unique glow color
+* animated border
+* holographic effects
+
+D. FRIENDS LEADERBOARD
+Smaller section:
+
+* compare against friends
+* rank progression
+* weekly changes
+
+4. REVIEWS PAGE
+   Route: /reviews
+
+Create a cinematic game review ecosystem.
+
+FEATURES:
+
+A. REVIEW CARDS
+Each review should include:
+
+* game cover
+* user avatar
+* star rating
+* pros/cons
+* review body
+* likes/dislikes
+* comments count
+* playtime before review
+
+Visual style:
+
+* glowing score badge
+* glassmorphism card
+* hover animations
+* animated borders
+
+B. REVIEW FILTERS
+Allow:
+
+* highest rated
+* most helpful
+* newest
+* controversial
+* platform filters
+
+C. FEATURED REVIEW
+Large editorial-style featured review section.
+
+D. COMMUNITY RATING DISTRIBUTION
+Add:
+
+* animated rating graphs
+* score breakdown
+* recommendation percentages
+
+5. SOCIAL SYSTEMS
+
+A. FRIENDS SYSTEM UI
+Build:
+
+* friend cards
+* online indicators
+* add friend buttons
+* activity status
+
+B. NOTIFICATION CENTER
+Create futuristic notification panel:
+
+* achievement alerts
+* friend activity
+* review likes
+* event announcements
+
+Animated:
+
+* slide-in notifications
+* unread glow state
+* stacked cards
+
+C. USER STATUS SYSTEM
+Statuses:
+
+* online
+* in-game
+* idle
+* offline
+
+Use animated indicators.
+
+6. SHARED INFRASTRUCTURE
+
+A. COMMUNITY TYPES
+Create strong TypeScript types:
+
+* UserProfile
+* Post
+* Review
+* LeaderboardEntry
+* Notification
+* Friend
+* ActivityEvent
+
+B. COMMUNITY SERVICES
+Create service layer:
+
+* community.service.ts
+* leaderboard.service.ts
+* review.service.ts
+* notification.service.ts
+
+C. ANIMATION SYSTEM
+Expand motion system:
+
+* hover depth
+* layered parallax
+* animated counters
+* timeline reveals
+* cinematic transitions
+
+D. RESPONSIVE SYSTEM
+Fully optimize for:
+
+* mobile
+* tablet
+* desktop
+
+Community feed should feel premium on phones.
+
+7. VISUAL QUALITY REQUIREMENTS
+
+The application should now feel like:
+“A futuristic gaming social operating system.”
+
+Animations must feel:
+
+* cinematic
+* premium
+* fluid
+* layered
+* physics-based
+
+Avoid:
+
+* generic social media layouts
+* flat cards
+* standard dashboard UI
+* basic hover effects
+
+Everything should feel:
+
+* immersive
+* alive
+* reactive
+* visually premium
+
+Maintain all existing auth guards, transitions, service architecture, and design consistency.

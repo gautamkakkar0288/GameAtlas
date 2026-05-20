@@ -1,0 +1,265 @@
+Build Phase 2 of GameAtlas inside the existing application using the same cinematic AAA gaming aesthetic, glassmorphism UI system, dark futuristic God-of-War-inspired red-black palette, immersive motion design, and responsive architecture.
+
+IMPORTANT:
+Do NOT redesign existing pages.
+Extend the existing design system and maintain visual consistency.
+
+PHASE 2 GOALS:
+Transform GameAtlas from a dashboard app into a living gaming discovery platform.
+
+Build these pages and systems:
+
+1. DISCOVERY / BROWSE PAGE
+   Route: /discover
+
+Create a highly immersive game discovery experience inspired by:
+
+* Steam discovery
+* Netflix browsing
+* PlayStation Store
+* cinematic Awwwards websites
+
+PAGE STRUCTURE:
+
+Hero Discovery Banner:
+
+* giant cinematic featured game carousel
+* auto-rotating showcase
+* animated transitions
+* blurred cinematic backgrounds
+* trailer/video hover previews
+* floating particles
+* glowing overlays
+* glassmorphism UI panels
+
+Sections:
+
+* Trending Now
+* New Releases
+* Top Rated
+* Popular Multiplayer
+* Indie Gems
+* Recommended For You
+* Recently Popular
+* Upcoming Releases
+
+Each section should:
+
+* use horizontal scrolling rows
+* include cinematic hover animations
+* use smooth scaling effects
+* include hover trailers
+* show platform badges
+* show ratings and playtime
+* include dynamic gradients
+
+Hover interactions:
+
+* card expands smoothly
+* glow intensifies
+* metadata fades in
+* subtle 3D tilt
+* cinematic shadow movement
+
+Add:
+
+* genre filters
+* platform filters
+* search integration
+* sorting system
+
+2. GLOBAL SEARCH EXPERIENCE
+   Build a production-level global search system.
+
+FEATURES:
+
+* command-palette-inspired UI
+* animated floating modal
+* cinematic blur background
+* instant search results
+* keyboard shortcut support (CMD+K / CTRL+K)
+* recent searches
+* trending searches
+* category tabs
+
+Search categories:
+
+* Games
+* Players
+* Genres
+* News
+* Reviews
+
+Include:
+
+* fuzzy search
+* debounced search input
+* animated result transitions
+* highlighted matching text
+
+SEARCH RESULTS PAGE:
+Route: /search
+
+Features:
+
+* advanced filters
+* sorting
+* tabs
+* result cards
+* infinite scroll
+* animated transitions
+
+3. NEWS FEED PAGE
+   Route: /news
+
+Build a cinematic gaming news platform.
+
+Features:
+
+* hero headline carousel
+* featured articles
+* trending stories
+* categories sidebar
+* animated article cards
+* editorial layouts
+* hover image zoom
+* smooth fade transitions
+
+Categories:
+
+* Esports
+* AAA
+* Indie
+* PlayStation
+* Xbox
+* PC
+* Nintendo
+* Mobile
+
+Article cards should include:
+
+* thumbnail
+* title
+* excerpt
+* source
+* read time
+* category
+* animated hover overlay
+
+4. ACHIEVEMENTS PAGE
+   Route: /achievements
+
+Build a premium achievements tracking experience.
+
+Features:
+
+* animated progress statistics
+* achievement rarity system
+* platform filtering
+* timeline view
+* completion percentage rings
+* achievement showcase cards
+
+Add:
+
+* rarity glow effects
+* unlock animations
+* achievement timeline
+* progress tracking charts
+
+Visual Feel:
+Should feel like:
+
+* PlayStation trophies
+* Xbox achievements
+* Destiny triumph screens
+
+5. SHARED SYSTEMS TO BUILD
+
+A. PAGE TRANSITIONS
+Implement cinematic route transitions:
+
+* fade
+* blur
+* directional slide
+* layered motion
+
+Use Framer Motion AnimatePresence.
+
+B. GLOBAL LOADING SYSTEM
+Create:
+
+* skeleton loaders
+* shimmer effects
+* cinematic loading screens
+* suspense fallbacks
+
+C. DESIGN TOKENS
+Centralize:
+
+* colors
+* spacing
+* shadows
+* glow effects
+* typography
+* animations
+
+D. RESPONSIVE SYSTEM
+Optimize for:
+
+* desktop
+* tablet
+* mobile
+
+Sidebar must collapse properly.
+
+E. MOCK SERVICE LAYER
+Create proper services architecture:
+
+* games.service.ts
+* search.service.ts
+* news.service.ts
+* achievements.service.ts
+
+Even if still using mock data.
+
+F. TYPESCRIPT TYPES
+Create strong reusable types for:
+
+* Game
+* NewsArticle
+* Achievement
+* SearchResult
+* Platform
+* Genre
+
+G. PERFORMANCE OPTIMIZATION
+Add:
+
+* lazy loading
+* optimized animations
+* image optimization
+* reduced motion support
+* virtualization where necessary
+
+ANIMATION QUALITY:
+Animations must feel:
+
+* cinematic
+* immersive
+* premium
+* smooth
+* layered
+* physics-based
+
+Avoid:
+
+* generic dashboard UI
+* cheap hover animations
+* excessive clutter
+* flat design
+
+The application should increasingly feel like:
+“A next-generation gaming operating system.”
+
+Maintain all existing auth guards and routing behavior.

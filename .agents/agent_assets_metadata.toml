@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "HefCZL7anGh0bS1Nk1DsL"
+uri = "file://artifacts/game-atlas/public/images/game1.png"
+type = "image"
+title = "Cyberpunk samurai action game"
+
+[[generated]]
+id = "v__vPX8v_2iBDhII3G1GO"
+uri = "file://artifacts/game-atlas/public/images/game2.png"
+type = "image"
+title = "Nordic mythos dark fantasy"
+
+[[generated]]
+id = "FyWN7hQqRaW_AD7BIP0hO"
+uri = "file://artifacts/game-atlas/public/images/game3.png"
+type = "image"
+title = "Space horror shooter"
+
+[[generated]]
+id = "1uU6Stq2OnIda3RrVVptz"
+uri = "file://artifacts/game-atlas/public/images/game4.png"
+type = "image"
+title = "Post-apocalyptic wasteland racer"
+
+[[generated]]
+id = "Jwk63F9Y0ckeW8hry6ZFU"
+uri = "file://artifacts/game-atlas/public/images/game5.png"
+type = "image"
+title = "Stealth assassin ancient city"
+
+[[generated]]
+id = "L6RbZYqgQsOBsKpMR0Scv"
+uri = "file://artifacts/game-atlas/public/images/game6.png"
+type = "image"
+title = "Mech combat battleground"
