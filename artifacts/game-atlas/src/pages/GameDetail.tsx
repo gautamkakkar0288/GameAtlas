@@ -414,6 +414,16 @@ export default function GameDetail() {
                     >
                       <Plus size={18} /> {addMutation.isPending ? "Adding..." : "ADD TO LIBRARY"}
                     </button>
+                  ) : game.storeUrl ? (
+                    <a
+                      href={game.storeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => updateMutation.mutate({ gameId: game.id, updates: { status: "playing" } })}
+                      className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-orbitron font-bold tracking-widest rounded shadow-[0_0_20px_rgba(139,0,0,0.4)] transition-all flex items-center gap-2 inline-flex"
+                    >
+                      <Play size={18} fill="currentColor" /> PLAY NOW
+                    </a>
                   ) : (
                     <button
                       onClick={() => updateMutation.mutate({ gameId: game.id, updates: { status: "playing" } })}

@@ -16,6 +16,7 @@ const GAMES_SEED = [
     releaseYear: 2022,
     rating: 4.8,
     size: 90.0,
+    storeUrl: "https://store.steampowered.com/app/1593500/God_of_War/",
   },
   {
     slug: "elden-ring",
@@ -30,6 +31,7 @@ const GAMES_SEED = [
     releaseYear: 2022,
     rating: 4.9,
     size: 60.0,
+    storeUrl: "https://store.steampowered.com/app/1245620/ELDEN_RING/",
   },
   {
     slug: "the-last-of-us-part-2",
@@ -44,6 +46,7 @@ const GAMES_SEED = [
     releaseYear: 2020,
     rating: 4.7,
     size: 78.0,
+    storeUrl: "https://store.playstation.com/en-us/product/UP9000-CUSA07820_00-THELASTOFUSPART2",
   },
   {
     slug: "cyberpunk-2077",
@@ -58,6 +61,7 @@ const GAMES_SEED = [
     releaseYear: 2020,
     rating: 4.4,
     size: 70.0,
+    storeUrl: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/",
   },
   {
     slug: "red-dead-redemption-2",
@@ -72,6 +76,7 @@ const GAMES_SEED = [
     releaseYear: 2018,
     rating: 4.9,
     size: 150.0,
+    storeUrl: "https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/",
   },
   {
     slug: "hollow-knight",
@@ -86,6 +91,7 @@ const GAMES_SEED = [
     releaseYear: 2017,
     rating: 4.8,
     size: 9.0,
+    storeUrl: "https://store.steampowered.com/app/367520/Hollow_Knight/",
   },
   {
     slug: "hades",
@@ -100,6 +106,7 @@ const GAMES_SEED = [
     releaseYear: 2020,
     rating: 4.9,
     size: 15.0,
+    storeUrl: "https://store.steampowered.com/app/1145360/Hades/",
   },
   {
     slug: "the-witcher-3",
@@ -114,6 +121,7 @@ const GAMES_SEED = [
     releaseYear: 2015,
     rating: 4.9,
     size: 50.0,
+    storeUrl: "https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/",
   },
   {
     slug: "baldurs-gate-3",
@@ -128,6 +136,7 @@ const GAMES_SEED = [
     releaseYear: 2023,
     rating: 4.9,
     size: 122.0,
+    storeUrl: "https://store.steampowered.com/app/1086940/Baldurs_Gate_3/",
   },
   {
     slug: "spider-man-2",
@@ -142,6 +151,22 @@ const GAMES_SEED = [
     releaseYear: 2023,
     rating: 4.6,
     size: 98.0,
+    storeUrl: "https://store.playstation.com/en-us/concept/10002456",
+  },
+  {
+    slug: "grand-theft-auto-v",
+    title: "Grand Theft Auto V",
+    description: "When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.",
+    coverImage: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2lbd.webp",
+    bannerImage: "https://images.igdb.com/igdb/image/upload/t_screenshot_big/sc85z8.webp",
+    genre: "Action Adventure",
+    platform: "Multi-Platform",
+    developer: "Rockstar North",
+    publisher: "Rockstar Games",
+    releaseYear: 2013,
+    rating: 4.8,
+    size: 110.0,
+    storeUrl: "https://store.epicgames.com/p/grand-theft-auto-v",
   },
 ];
 

@@ -3,6 +3,9 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { pinoHttp } from "pino-http";
+import path from "path";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -90,5 +93,8 @@ app.use("/api/igdb", igdbLimiter);
 app.use("/api", router);
 
 app.use(errorHandler);
+
+const swaggerDocument = YAML.load(path.join(process.cwd(), "lib/api-spec/openapi.yaml"));
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 export default app;

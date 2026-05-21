@@ -16,6 +16,7 @@ export const gamesTable = pgTable("games", {
   releaseYear: integer("release_year").notNull(),
   rating: real("rating").default(0).notNull(),
   size: real("size").default(0),
+  storeUrl: text("store_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
   index("games_genre_idx").on(table.genre),
