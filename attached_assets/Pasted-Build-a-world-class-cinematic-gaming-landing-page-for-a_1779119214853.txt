@@ -1,0 +1,359 @@
+Build a world-class cinematic gaming landing page for a project called “GameAtlas”.
+
+The website should feel like a combination of:
+
+* God of War inspired dark Nordic aesthetic
+* Cyberpunk futuristic UI
+* Premium Awwwards-winning cinematic experience
+* Glassmorphism interface
+* AAA gaming trailer energy
+* Modern immersive scroll storytelling
+
+IMPORTANT:
+This is NOT a basic gaming website.
+This should feel like a next-generation interactive gaming universe.
+
+TECH STACK:
+
+* Next.js
+* Tailwind CSS
+* Framer Motion
+* GSAP
+* Lenis smooth scrolling
+* Three.js / React Three Fiber
+* Spline integration
+* Shadcn UI
+* TypeScript
+
+OVERALL DESIGN DIRECTION:
+
+* Ultra-dark background (#050505)
+* Deep blood-red accents inspired by God of War
+* White typography
+* Frosted glassmorphism cards
+* Cinematic lighting
+* Floating particles
+* Ambient red glow
+* Fog effects
+* Metallic textures
+* Animated gradients
+* Premium motion design
+* Smooth transitions between sections
+
+COLOR PALETTE:
+Primary Background:
+
+* #050505
+* #0d0d0d
+* #111111
+
+Accent Colors:
+
+* #8B0000
+* #B11226
+* #ff2a2a
+
+Text:
+
+* #ffffff
+* #d1d1d1
+
+Glow Effects:
+
+* red glow shadows
+* subtle white neon glow
+
+TYPOGRAPHY:
+Use cinematic bold typography.
+Fonts:
+
+* Orbitron
+* Bebas Neue
+* Inter
+* Rajdhani
+
+Headings should feel massive and dramatic.
+Subheadings should feel futuristic and clean.
+
+WEBSITE STRUCTURE:
+
+1. HERO SECTION
+   Create an insane cinematic hero section.
+
+Features:
+
+* Fullscreen layout
+* Animated 3D background
+* Floating particles
+* Smoke/fog animation
+* Mouse-reactive lighting
+* Glassmorphism overlay
+* Dynamic animated gradient
+* Slow cinematic zoom effects
+* Floating holographic UI elements
+* Subtle RGB distortion
+* Red glowing borders
+
+Hero Content:
+Large heading:
+“ENTER THE WORLD OF GAMEATLAS”
+
+Subheading:
+“The ultimate AI-powered gaming universe for discovery, competition, tracking, and next-generation gaming experiences.”
+
+Buttons:
+
+* Explore Games
+* Join Community
+
+Hero Animations:
+
+* Text reveal animation
+* Cinematic fade-in
+* Scroll-triggered movement
+* Floating UI panels
+* Magnetic buttons
+* Hover distortion effects
+* Cursor glow interaction
+* Background depth parallax
+
+3D ELEMENTS:
+Add floating:
+
+* gaming controllers
+* holographic game cards
+* glowing particles
+* futuristic HUD circles
+* rotating wireframe spheres
+* floating red energy lines
+
+Add cinematic moving spotlight effect.
+
+2. GLOBAL SEARCH BAR SECTION
+   Create a futuristic floating search bar.
+
+Features:
+
+* centered floating glassmorphism container
+* glowing red outline
+* animated focus states
+* AI search feeling
+* floating suggestions dropdown
+* animated placeholder text
+
+Placeholder examples:
+
+* “Search AAA titles...”
+* “Find esports tournaments...”
+* “Discover your next obsession...”
+
+Search Bar Effects:
+
+* animated border glow
+* pulse effect
+* glass blur
+* neon reflections
+* particle interaction on hover
+
+3. FEATURES SECTION
+   Create a premium grid-based features section.
+
+Layout:
+
+* staggered cards
+* asymmetric design
+* animated entry effects
+* floating cards
+* layered glassmorphism
+
+Features to Include:
+
+* AI Game Recommendations
+* Game Discovery Engine
+* Community Hub
+* Esports & Tournaments
+* Live Statistics Tracking
+* Cross Platform Sync
+* Game Reviews & Ratings
+* Gaming News Feed
+* Achievement Tracking
+* Personalized Dashboard
+
+Each card should include:
+
+* glowing icon
+* animated hover state
+* moving gradient
+* glass blur
+* dynamic lighting
+* subtle 3D tilt
+
+Animations:
+
+* cards rise on hover
+* lighting follows cursor
+* smooth spring motion
+* rotating gradient border
+* background particle bursts
+
+4. GAME SHOWCASE SECTION
+   This should feel like a AAA gaming trailer experience.
+
+Features:
+
+* horizontal scroll showcase
+* cinematic transitions
+* giant game banners
+* animated game cards
+* hover-expand interactions
+* parallax scrolling
+
+Game cards should include:
+
+* dynamic cover art
+* glowing hover borders
+* animated metadata
+* play trailer button
+* floating stats
+* achievement overlays
+
+Add:
+
+* cinematic trailer preview
+* hover video playback
+* background environmental effects
+* floating UI overlays
+
+Visual Effects:
+
+* fog
+* sparks
+* ember particles
+* red energy streaks
+* cinematic shadows
+* dramatic lighting
+
+Make the scrolling feel buttery smooth and immersive.
+
+5. FOOTER
+   Create a futuristic cinematic footer.
+
+Include:
+
+* GameAtlas logo
+* glowing divider lines
+* social icons
+* navigation links
+* newsletter signup
+* animated background grid
+* floating particles
+
+Footer should feel like:
+“the control center of a futuristic gaming empire.”
+
+ADVANCED INTERACTIONS:
+Add:
+
+* smooth scrolling with Lenis
+* GSAP scroll-trigger animations
+* Framer Motion transitions
+* page load cinematic intro
+* animated loading screen
+* custom cursor
+* magnetic buttons
+* hover distortions
+* cursor trails
+* cinematic scene transitions
+
+LOADING SCREEN:
+Create an ultra-premium loading sequence.
+
+Include:
+
+* animated GameAtlas logo
+* glitch effects
+* progress bar
+* particle animation
+* cinematic sound-inspired visual pulses
+* fade into hero section dramatically
+
+BACKGROUND EFFECTS:
+Add throughout the website:
+
+* animated grid
+* moving particles
+* red fog
+* ambient glow
+* holographic overlays
+* subtle scanlines
+* cinematic noise texture
+* moving gradients
+* animated stars/dust
+
+MOTION DESIGN:
+Everything should feel alive.
+
+Animations must:
+
+* be smooth
+* premium
+* cinematic
+* physics-based
+* immersive
+* responsive
+
+Avoid cheap animations.
+
+Use:
+
+* spring animations
+* cinematic easing
+* staggered reveals
+* layered parallax
+* smooth transforms
+* motion blur simulation
+
+MOBILE RESPONSIVENESS:
+The website must look insane on mobile too.
+
+Requirements:
+
+* optimized animations
+* responsive typography
+* touch-friendly interactions
+* adaptive 3D effects
+* optimized particle counts
+* reduced GPU load on low-end devices
+
+PERFORMANCE:
+Optimize for:
+
+* fast loading
+* lazy loading
+* code splitting
+* image optimization
+* GPU acceleration
+* efficient animation rendering
+
+IMPORTANT:
+The website should feel like:
+“A futuristic AAA gaming universe made by a billion-dollar gaming company.”
+
+DO NOT make it feel:
+
+* generic
+* template-based
+* childish
+* overly cluttered
+* basic gamer UI
+
+The final experience should feel:
+
+* cinematic
+* premium
+* immersive
+* futuristic
+* interactive
+* visually unforgettable
+
+Add production-level polish everywhere.
