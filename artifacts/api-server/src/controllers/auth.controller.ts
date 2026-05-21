@@ -7,17 +7,6 @@ import { registerSchema, loginSchema } from "../../../../lib/db/src/schema/index
 import { createError } from "../middleware/errorHandler.js";
 
 export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
-  /*  #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'User registration details',
-        required: true,
-        schema: {
-            email: "user@example.com",
-            username: "player1",
-            password: "password123",
-            displayName: "Player One"
-        }
-  } */
   try {
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -86,15 +75,6 @@ export async function register(req: Request, res: Response, next: NextFunction):
 }
 
 export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
-  /*  #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'User login credentials',
-        required: true,
-        schema: {
-            email: "user@example.com",
-            password: "password123"
-        }
-  } */
   try {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {

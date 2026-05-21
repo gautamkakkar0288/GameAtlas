@@ -1,7 +1,4 @@
 import { Router } from "express";
-import swaggerUi from "swagger-ui-express";
-import { createRequire } from "module";
-
 import healthRouter from "./health.js";
 import authRouter from "./auth.js";
 import gamesRouter from "./games.js";
@@ -15,13 +12,7 @@ import recommendationsRouter from "./recommendations.js";
 import dnaRouter from "./dna.js";
 import igdbRouter from "./igdb.js";
 
-const require = createRequire(import.meta.url);
-const swaggerDocument = require("../src/swagger_output.json");
-
 const router = Router();
-
-router.use("/", swaggerUi.serve);
-router.get("/", swaggerUi.setup(swaggerDocument));
 
 router.use(healthRouter);
 router.use("/auth", authRouter);

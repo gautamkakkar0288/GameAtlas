@@ -8,19 +8,6 @@ import { gamesApi, libraryApi, reviewsApi, type Review, type Achievement } from 
 import { igdbApi, type IGDBGame } from "@/lib/igdb";
 import { auth } from "@/lib/auth";
 
-function getStoreUrl(game: { title: string; platform: string; storeUrl?: string | null }): string {
-  if (game.storeUrl) return game.storeUrl;
-  const q = encodeURIComponent(game.title);
-  const platform = game.platform.toLowerCase();
-  if (platform.includes("steam") || platform.includes("multi")) return `https://store.steampowered.com/search/?term=${q}`;
-  if (platform.includes("playstation")) return `https://store.playstation.com/search/${q}`;
-  if (platform.includes("xbox")) return `https://www.xbox.com/en-us/search?q=${q}`;
-  if (platform.includes("nintendo")) return `https://www.nintendo.com/us/search/#q=${q}`;
-  if (platform.includes("epic")) return `https://store.epicgames.com/browse?q=${q}`;
-  if (platform.includes("riot")) return `https://www.riotgames.com`;
-  return `https://www.google.com/search?q=${q}+buy`;
-}
-
 function SkeletonBlock({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-white/5 rounded ${className}`} />;
 }
@@ -429,10 +416,7 @@ export default function GameDetail() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => {
-                        updateMutation.mutate({ gameId: game.id, updates: { status: "playing" } });
-                        window.open(getStoreUrl(game), "_blank", "noopener,noreferrer");
-                      }}
+                      onClick={() => updateMutation.mutate({ gameId: game.id, updates: { status: "playing" } })}
                       className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-orbitron font-bold tracking-widest rounded shadow-[0_0_20px_rgba(139,0,0,0.4)] transition-all flex items-center gap-2"
                     >
                       <Play size={18} fill="currentColor" /> PLAY NOW
@@ -446,12 +430,6 @@ export default function GameDetail() {
                       <Heart size={18} fill={isFavorite ? "currentColor" : "none"} /> {isFavorite ? "FAVORITED" : "FAVORITE"}
                     </button>
                   )}
-                  <button
-                    onClick={() => window.open(getStoreUrl(game), "_blank", "noopener,noreferrer")}
-                    className="px-6 py-3 glass-panel hover:bg-white/10 font-rajdhani uppercase font-bold tracking-widest rounded transition-all flex items-center gap-2 text-gray-300 hover:text-white border border-white/10 hover:border-red-500/30"
-                  >
-                    <ExternalLink size={16} /> OPEN IN STORE
-                  </button>
                   <button className="p-3 glass-panel hover:bg-white/10 text-gray-300 hover:text-white rounded transition-all"><Share2 size={18} /></button>
                 </div>
               </div>

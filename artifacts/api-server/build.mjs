@@ -103,8 +103,6 @@ async function buildAll() {
       "puppeteer",
       "puppeteer-core",
       "electron",
-      "swagger-ui-express",
-      "swagger-ui-dist",
     ],
     sourcemap: "linked",
     plugins: [

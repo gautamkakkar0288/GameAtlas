@@ -57,15 +57,6 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
 }
 
 export async function updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
-  /*  #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'Profile updates',
-        required: true,
-        schema: {
-            displayName: "New Name",
-            bio: "I love games"
-        }
-  } */
   try {
     const userId = req.user!.userId;
     const parsed = updateProfileSchema.safeParse(req.body);
@@ -129,15 +120,6 @@ export async function getUserAchievements(req: Request, res: Response, next: Nex
 }
 
 export async function saveOnboarding(req: Request, res: Response, next: NextFunction): Promise<void> {
-  /*  #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'Onboarding preferences',
-        required: true,
-        schema: {
-            favoriteGenres: ["RPG", "Action"],
-            playStyle: "hardcore"
-        }
-  } */
   try {
     const userId = req.user!.userId;
     const { favoriteGenres = [], playStyle = "casual" } = req.body as { favoriteGenres?: string[]; playStyle?: string };

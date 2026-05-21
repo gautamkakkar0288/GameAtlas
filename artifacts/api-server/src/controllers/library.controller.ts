@@ -50,15 +50,6 @@ export async function getUserLibrary(req: Request, res: Response, next: NextFunc
 }
 
 export async function addToLibrary(req: Request, res: Response, next: NextFunction): Promise<void> {
-  /*  #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'Game to add to library',
-        required: true,
-        schema: {
-            gameId: 1,
-            status: "not_started"
-        }
-  } */
   try {
     const userId = req.user!.userId;
     const parsed = addGameSchema.safeParse(req.body);
@@ -92,16 +83,6 @@ export async function addToLibrary(req: Request, res: Response, next: NextFuncti
 }
 
 export async function updateLibraryEntry(req: Request, res: Response, next: NextFunction): Promise<void> {
-  /*  #swagger.parameters['body'] = {
-        in: 'body',
-        description: 'Update game library status',
-        required: true,
-        schema: {
-            status: "playing",
-            playtime: 120,
-            favorite: true
-        }
-  } */
   try {
     const userId = req.user!.userId;
     const gameId = Number(req.params.gameId);
