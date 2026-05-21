@@ -112,6 +112,7 @@ export interface Game {
   releaseYear: number;
   rating: number;
   size: number | null;
+  storeUrl: string | null;
   createdAt: string;
 }
 
