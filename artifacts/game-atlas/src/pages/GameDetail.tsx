@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { gamesApi, libraryApi, reviewsApi, type Review, type Achievement } from "@/lib/api";
 import { igdbApi, type IGDBGame } from "@/lib/igdb";
+import { GameMedia } from "@/components/shared/GameMedia";
 import { auth } from "@/lib/auth";
 
 function SkeletonBlock({ className }: { className?: string }) {
@@ -353,15 +354,17 @@ export default function GameDetail() {
     <AppLayout>
       <div className="animate-in fade-in duration-700 pb-20 -mt-4 md:-mt-8 -mx-4 md:-mx-8">
         {/* Hero Section */}
-        <div className="relative h-[60vh] min-h-[400px] w-full flex items-end overflow-hidden">
+        <div className="relative h-[65vh] min-h-[440px] w-full flex items-end overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img
+            <GameMedia
               src={igdbGame?.artwork ?? igdbGame?.screenshots?.[0]?.fullUrl ?? game.bannerImage ?? game.coverImage}
-              alt="Background"
-              className="w-full h-full object-cover opacity-30 scale-105 blur-sm"
+              alt={game.title}
+              title={game.title}
+              genre={game.genre}
+              className="w-full h-full object-cover opacity-35 scale-105 blur-[2px]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/75 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/40 to-transparent pointer-events-none" />
           </div>
 
           <div className="relative z-10 w-full p-6 md:p-12 lg:px-16 container mx-auto">
@@ -369,12 +372,18 @@ export default function GameDetail() {
               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back
             </Link>
 
-            <div className="flex flex-col md:flex-row gap-8 items-start md:items-end">
-              <img
-                src={igdbGame?.cover ?? game.coverImage}
-                alt={game.title}
-                className="w-48 md:w-64 rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] border border-white/10"
-              />
+            <div className="flex flex-col sm:flex-row gap-6 md:gap-8 items-start sm:items-end">
+              <div className="w-40 sm:w-48 md:w-60 shrink-0 aspect-[3/4] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.9)] border border-white/15">
+                <GameMedia
+                  src={igdbGame?.cover ?? game.coverImage}
+                  alt={game.title}
+                  title={game.title}
+                  genre={game.genre}
+                  aspectRatio="3/4"
+                  priority={true}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
               <div className="flex-1 space-y-4">
                 <div className="flex items-center gap-3 flex-wrap">

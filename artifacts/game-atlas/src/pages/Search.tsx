@@ -7,42 +7,28 @@ import { PageTransition } from '@/components/shared/PageTransition';
 import { gamesApi, libraryApi, type Game } from '@/lib/api';
 import { Search as SearchIcon, X, Filter, Star, Plus, Check, Clock } from 'lucide-react';
 
-function GameResultCard({ game, inLibrary, onAdd, onClick }: { game: Game; inLibrary: boolean; onAdd: (id: number) => void; onClick: () => void }) {
+import { UnifiedGameCard } from '@/components/shared/UnifiedGameCard';
+
+function GameResultCard({
+  game,
+  inLibrary,
+  onAdd,
+  onClick,
+}: {
+  game: Game;
+  inLibrary: boolean;
+  onAdd: (id: number) => void;
+  onClick?: () => void;
+}) {
   return (
-    <motion.div
-      whileHover={{ y: -2, borderColor: 'rgba(239,68,68,0.4)' }}
-      className="group glass-panel rounded-xl border border-white/5 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_4px_30px_rgba(139,0,0,0.15)]"
-      onClick={onClick}
-    >
-      <div className="flex gap-0">
-        <div className="relative w-24 shrink-0 overflow-hidden">
-          <img src={game.coverImage} alt={game.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-70" />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0d0d0d]/80" />
-        </div>
-        <div className="flex-1 p-4 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="font-orbitron font-bold text-white text-sm group-hover:text-red-100 transition-colors truncate">{game.title}</h3>
-            <div className="flex items-center gap-1 shrink-0">
-              <Star size={11} className="text-yellow-400" fill="currentColor" />
-              <span className="font-orbitron text-xs text-white">{game.rating.toFixed(1)}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="font-rajdhani text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-red-950/40 border border-red-500/20 text-red-400 rounded">{game.genre}</span>
-            <span className="font-rajdhani text-[10px] text-gray-500">{game.platform}</span>
-            <span className="font-rajdhani text-[10px] text-gray-600">{game.releaseYear}</span>
-          </div>
-          <p className="font-inter text-xs text-gray-500 line-clamp-2 mb-3">{game.description}</p>
-          <button
-            onClick={(e) => { e.stopPropagation(); onAdd(game.id); }}
-            disabled={inLibrary}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-rajdhani font-bold uppercase text-xs transition-all ${inLibrary ? 'bg-green-950/30 text-green-400 border border-green-500/20 cursor-default' : 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border border-red-500/30'}`}
-          >
-            {inLibrary ? <><Check size={11} /> In Library</> : <><Plus size={11} /> Add to Library</>}
-          </button>
-        </div>
-      </div>
-    </motion.div>
+    <div onClick={onClick}>
+      <UnifiedGameCard
+        game={game}
+        variant="horizontal"
+        inLibrary={inLibrary}
+        onAddToLibrary={onAdd}
+      />
+    </div>
   );
 }
 

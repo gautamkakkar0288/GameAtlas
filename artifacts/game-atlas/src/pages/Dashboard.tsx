@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { auth } from "@/lib/auth";
 import { usersApi, libraryApi, gamesApi, recommendationsApi, dnaApi } from "@/lib/api";
+import { ConnectedPlatformsWidget } from "@/components/platforms/ConnectedPlatformsWidget";
 
 function SkeletonBlock({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-white/5 rounded ${className}`} />;
@@ -227,6 +228,8 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </div>
             </section>
+            {/* Connected Gaming Platforms */}
+            <ConnectedPlatformsWidget />
           </div>
 
           <div className="space-y-6">

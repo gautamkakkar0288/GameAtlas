@@ -21,90 +21,40 @@ function PlatformIcon({ p, className = '' }: { p: string; className?: string }) 
   }
 }
 
+import { UnifiedGameCard } from '@/components/shared/UnifiedGameCard';
+
 function GameCard({ game, inLibrary, onAdd }: { game: Game; inLibrary: boolean; onAdd: (id: number) => void }) {
   return (
-    <motion.div whileHover={{ y: -4, scale: 1.02 }} className="group cursor-pointer shrink-0 w-48">
-      <div className="relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 group-hover:border-red-500/40 transition-all duration-300">
-        <img src={game.coverImage} alt={game.title} loading="lazy"
-          className="w-full h-full object-cover opacity-70 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 bg-black/40 backdrop-blur-sm p-3">
-          <Link href={`/library/${game.slug}`}>
-            <button className="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white font-rajdhani uppercase text-xs font-bold rounded transition-colors">Details</button>
-          </Link>
-          <button
-            onClick={(e) => { e.stopPropagation(); onAdd(game.id); }}
-            disabled={inLibrary}
-            className={`w-full py-1.5 font-rajdhani uppercase text-xs font-bold rounded transition-all flex items-center justify-center gap-1 ${inLibrary ? 'bg-green-900/40 text-green-400 border border-green-500/30 cursor-default' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-          >
-            {inLibrary ? <><Check size={11} /> Added</> : <><Plus size={11} /> Add</>}
-          </button>
-        </div>
-        <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 rounded-full px-1.5 py-0.5">
-          <Star size={10} className="text-yellow-400" fill="currentColor" />
-          <span className="font-orbitron text-[9px] text-white">{game.rating.toFixed(1)}</span>
-        </div>
-      </div>
-      <div className="mt-2 px-1">
-        <p className="font-orbitron font-bold text-white text-xs truncate">{game.title}</p>
-        <p className="font-rajdhani text-[10px] text-gray-500 uppercase tracking-wider">{game.genre}</p>
-      </div>
-    </motion.div>
+    <div className="shrink-0 w-44 sm:w-48">
+      <UnifiedGameCard
+        game={game}
+        variant="standard"
+        inLibrary={inLibrary}
+        onAddToLibrary={onAdd}
+      />
+    </div>
   );
 }
 
 function IGDBGameCard({ game }: { game: IGDBGame }) {
-  const releaseYear = game.firstReleaseDate
-    ? new Date(game.firstReleaseDate).getFullYear()
-    : null;
-
   return (
-    <motion.div whileHover={{ y: -4, scale: 1.02 }} className="group cursor-pointer shrink-0 w-48">
-      <div className="relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 group-hover:border-red-500/40 transition-all duration-300">
-        {game.cover ? (
-          <img src={game.cover} alt={game.name} loading="lazy"
-            className="w-full h-full object-cover opacity-80 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-b from-red-950/30 to-black flex items-center justify-center">
-            <span className="font-orbitron text-xs text-gray-600 text-center px-2">{game.name}</span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 bg-black/40 backdrop-blur-sm p-3">
-          <a
-            href={`https://www.igdb.com/games/${game.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-1.5 bg-red-600 hover:bg-red-500 text-white font-rajdhani uppercase text-xs font-bold rounded transition-colors flex items-center justify-center gap-1"
-          >
-            <ExternalLink size={10} /> View on IGDB
-          </a>
-          <div className="w-full py-1.5 bg-white/5 text-gray-300 font-rajdhani uppercase text-[10px] rounded text-center border border-white/10">
-            {game.genres?.[0] ?? 'Game'}
-          </div>
-        </div>
-        {game.rating && (
-          <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 rounded-full px-1.5 py-0.5">
-            <Star size={10} className="text-yellow-400" fill="currentColor" />
-            <span className="font-orbitron text-[9px] text-white">{(game.rating / 20).toFixed(1)}</span>
-          </div>
-        )}
-        {!game.firstReleaseDate || new Date(game.firstReleaseDate) > new Date() ? (
-          <div className="absolute top-2 left-2">
-            <span className="bg-red-600/90 text-white font-rajdhani font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded">
-              {game.hypes ? `${game.hypes} hypes` : 'Upcoming'}
-            </span>
-          </div>
-        ) : null}
-      </div>
-      <div className="mt-2 px-1">
-        <p className="font-orbitron font-bold text-white text-xs truncate">{game.name}</p>
-        <p className="font-rajdhani text-[10px] text-gray-500 uppercase tracking-wider">
-          {game.genres?.[0] ?? ''}
-          {releaseYear ? ` · ${releaseYear}` : ''}
-        </p>
-      </div>
-    </motion.div>
+    <div className="shrink-0 w-44 sm:w-48">
+      <UnifiedGameCard
+        game={{
+          id: game.id,
+          slug: game.slug,
+          name: game.name,
+          cover: game.cover,
+          genre: game.genres?.[0],
+          genres: game.genres,
+          platforms: game.platforms,
+          rating: game.rating,
+          firstReleaseDate: game.firstReleaseDate,
+          summary: game.summary,
+        }}
+        variant="standard"
+      />
+    </div>
   );
 }
 

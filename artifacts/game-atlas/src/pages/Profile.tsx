@@ -12,6 +12,8 @@ import {
   Calendar, Clock, Trophy, Star, Gamepad2, Zap, Target, TrendingUp,
   Edit3, Save, X, Heart, CheckCircle, Shield
 } from 'lucide-react';
+import { ConnectedPlatformsWidget } from '@/components/platforms/ConnectedPlatformsWidget';
+import { GameMedia } from '@/components/shared/GameMedia';
 
 const rarityColors: Record<string, string> = {
   Common: '#9ca3af', Uncommon: '#22c55e', Rare: '#3b82f6',
@@ -254,9 +256,16 @@ export default function Profile() {
                     {favorites.map((entry) => (
                       <Link key={entry.id} href={`/library/${entry.game?.slug}`}>
                         <motion.div whileHover={{ y: -4 }} className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 hover:border-red-500/40 cursor-pointer transition-all">
-                          <img src={entry.game?.coverImage} alt={entry.game?.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-70 group-hover:opacity-50" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                          <div className="absolute bottom-0 left-0 right-0 p-3">
+                          <GameMedia
+                            src={entry.game?.coverImage}
+                            alt={entry.game?.title || 'Game'}
+                            title={entry.game?.title}
+                            genre={entry.game?.genre}
+                            aspectRatio="3/4"
+                            className="w-full h-full opacity-70 group-hover:opacity-50 group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                          <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
                             <Heart size={12} fill="#ef4444" className="text-red-500 mb-1" />
                             <p className="font-orbitron text-xs font-bold text-white truncate">{entry.game?.title}</p>
                             <p className="font-rajdhani text-[10px] text-gray-400 uppercase">{entry.playtime.toFixed(0)}h played</p>
@@ -356,6 +365,9 @@ export default function Profile() {
                   </div>
                 ))}
               </div>
+
+              {/* Connected Platforms */}
+              <ConnectedPlatformsWidget />
             </div>
           </div>
         </div>

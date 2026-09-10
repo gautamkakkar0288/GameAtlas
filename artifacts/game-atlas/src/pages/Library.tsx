@@ -5,6 +5,7 @@ import { Search, LayoutGrid, List, Star, Clock, AlertCircle, Heart, Plus } from 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { libraryApi, gamesApi, type LibraryEntry } from "@/lib/api";
+import { GameMedia } from "@/components/shared/GameMedia";
 import { auth } from "@/lib/auth";
 
 function SkeletonCard() {
@@ -212,10 +213,12 @@ export default function Library() {
                 >
                   <Link href={`/library/${entry.game!.slug}`}>
                     <div className="group relative aspect-[3/4] rounded-lg overflow-hidden border border-white/10 hover:border-red-500 transition-all duration-300 cursor-pointer hover:shadow-[0_0_30px_rgba(139,0,0,0.4)] hover:-translate-y-2 bg-[#0d0d0d]">
-                      <img
+                      <GameMedia
                         src={entry.game!.coverImage}
                         alt={entry.game!.title}
-                        loading="lazy"
+                        title={entry.game!.title}
+                        genre={entry.game!.genre}
+                        aspectRatio="3/4"
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-40"
                       />
                       {entry.favorite && (

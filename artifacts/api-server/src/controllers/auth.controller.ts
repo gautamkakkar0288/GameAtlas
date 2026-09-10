@@ -139,6 +139,107 @@ export async function me(req: Request, res: Response, next: NextFunction): Promi
   }
 }
 
+export async function googleAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { email, name, googleId, avatarUrl } = req.body ?? {};
+
+    if (!email || typeof email !== "string") {
+      throw createError("Google account email is required", 400, "INVALID_GOOGLE_DATA");
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanGoogleId = googleId && typeof googleId === "string" ? googleId.trim() : null;
+
+    // 1. Try finding by googleId first
+    let user = cleanGoogleId
+      ? (
+          await db
+            .select()
+            .from(usersTable)
+            .where(eq(usersTable.googleId, cleanGoogleId))
+            .limit(1)
+        )[0]
+      : null;
+
+    // 2. If not found by googleId, check by email to link accounts
+    if (!user) {
+      const [existingUser] = await db
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.email, cleanEmail))
+        .limit(1);
+
+      if (existingUser) {
+        // Link Google ID and avatar to existing account if not yet set
+        const updateData: Partial<typeof usersTable.$inferInsert> = {};
+        if (cleanGoogleId && !existingUser.googleId) updateData.googleId = cleanGoogleId;
+        if (avatarUrl && !existingUser.avatarUrl) updateData.avatarUrl = avatarUrl;
+
+        if (Object.keys(updateData).length > 0) {
+          const [updated] = await db
+            .update(usersTable)
+            .set(updateData)
+            .where(eq(usersTable.id, existingUser.id))
+            .returning();
+          user = updated;
+        } else {
+          user = existingUser;
+        }
+      }
+    }
+
+    // 3. If still no user, create a new one
+    if (!user) {
+      let baseUsername = (cleanEmail.split("@")[0] || "player").replace(/[^a-zA-Z0-9_]/g, "");
+      if (baseUsername.length < 3) baseUsername = `player_${Math.floor(1000 + Math.random() * 9000)}`;
+
+      let finalUsername = baseUsername;
+      const [takenUsername] = await db
+        .select({ id: usersTable.id })
+        .from(usersTable)
+        .where(eq(usersTable.username, finalUsername))
+        .limit(1);
+
+      if (takenUsername) {
+        finalUsername = `${baseUsername.slice(0, 20)}_${Math.floor(100 + Math.random() * 900)}`;
+      }
+
+      const randomPassword = Math.random().toString(36).slice(-12) + "Nexus$99";
+      const passwordHash = await bcrypt.hash(randomPassword, 10);
+      const avatarColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 45%)`;
+
+      const [newUser] = await db
+        .insert(usersTable)
+        .values({
+          email: cleanEmail,
+          username: finalUsername,
+          passwordHash,
+          googleId: cleanGoogleId,
+          avatarUrl: avatarUrl || null,
+          displayName: name || baseUsername,
+          avatarColor,
+          level: 1,
+          xp: 0,
+          rankTier: "Bronze",
+        })
+        .returning();
+
+      user = newUser;
+    }
+
+    const token = signToken({
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    });
+
+    const { passwordHash: _, ...publicUser } = user;
+    res.json({ user: publicUser, token });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export function logout(_req: Request, res: Response): void {
   res.json({ message: "Logged out successfully" });
 }

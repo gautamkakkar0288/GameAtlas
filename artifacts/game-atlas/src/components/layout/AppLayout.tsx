@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { MobileBottomNav } from "./MobileBottomNav";
 import { auth } from "@/lib/auth";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +18,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   if (!auth.isAuthenticated()) return null;
 
   return (
-    <div className="min-h-[100dvh] bg-[#050505] text-white flex relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#050505] text-white flex relative overflow-x-clip">
       {/* Animated subtle grid background */}
       <div 
         className="fixed inset-0 z-0 pointer-events-none opacity-20"
@@ -33,12 +34,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
       
-      <div className="flex-1 flex flex-col md:pl-16 relative z-10 transition-all duration-300">
+      <div className="flex-1 flex flex-col md:pl-16 relative z-10 transition-all duration-300 min-w-0">
         <TopBar onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 pt-[60px] p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1 pt-[60px] pb-20 md:pb-8 p-3 sm:p-5 md:p-8 overflow-y-auto">
           {children}
         </main>
       </div>
+
+      <MobileBottomNav />
     </div>
   );
 }

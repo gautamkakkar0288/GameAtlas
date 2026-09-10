@@ -13,6 +13,13 @@ export const auth = {
     return user;
   },
 
+  async loginWithGoogle(data: { email: string; name?: string; googleId?: string; avatarUrl?: string }): Promise<AuthUser> {
+    const { user, token } = await authApi.google(data);
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    return user;
+  },
+
   async registerWithApi(params: {
     email: string;
     username: string;

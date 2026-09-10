@@ -11,6 +11,7 @@ import leaderboardsRouter from "./leaderboards.js";
 import recommendationsRouter from "./recommendations.js";
 import dnaRouter from "./dna.js";
 import igdbRouter from "./igdb.js";
+import platformsRouter from "./platforms.js";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/leaderboards", leaderboardsRouter);
 router.use("/recommendations", recommendationsRouter);
 router.use("/dna", dnaRouter);
 router.use("/igdb", igdbRouter);
+router.use("/platforms", platformsRouter);
 
 export default router;

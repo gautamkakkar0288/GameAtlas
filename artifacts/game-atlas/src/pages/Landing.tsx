@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Hero } from "@/components/Hero";
+import { CinematicHero } from "@/components/landing/CinematicHero";
 import { SearchBar } from "@/components/SearchBar";
 import { Features } from "@/components/Features";
 import { GameShowcase } from "@/components/GameShowcase";
@@ -25,8 +25,8 @@ export default function Landing() {
         {!loading && (
           <>
             <MouseLighting />
-            <ParticleSystem count={60} />
-            <Hero />
+            <ParticleSystem count={50} />
+            <CinematicHero />
             <SearchBar />
             <Features />
             <GameShowcase />

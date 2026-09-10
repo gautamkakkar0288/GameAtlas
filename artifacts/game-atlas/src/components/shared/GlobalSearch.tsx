@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Clock, TrendingUp, Gamepad2, User, Newspaper } from 'lucide-react';
-import { useLocation } from 'wouter';
-import { searchService } from '@/services/search.service';
-import type { SearchResult } from '@/types';
+import { Search, X, Clock, TrendingUp, Gamepad2, User, Newspaper, Star, ChevronRight, Loader2 } from 'lucide-react';
+import { useLocation, Link } from 'wouter';
+import { gamesApi, usersApi, type Game } from '@/lib/api';
+import { igdbApi, type IGDBGame } from '@/lib/igdb';
+import { GameMedia } from './GameMedia';
 
-// Global store for the modal state to allow opening from anywhere
 let globalSetOpen: (open: boolean) => void = () => {};
 
 export function useGlobalSearch() {
@@ -16,13 +16,21 @@ export function useGlobalSearch() {
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [category, setCategory] = useState<"all" | "games" | "community">("all");
+  const [results, setResults] = useState<Array<{ id: number | string; title: string; subtitle: string; imageUrl?: string | null; slug?: string; rating?: number; type: "game" | "user" }>>([]);
+  const [loading, setLoading] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
-  const [trending, setTrending] = useState<string[]>([]);
+  const [trending] = useState<string[]>([
+    "Elden Ring",
+    "Cyberpunk 2077",
+    "God of War",
+    "Hollow Knight",
+    "Hades",
+  ]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [, setLocation] = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   useEffect(() => {
     globalSetOpen = setOpen;
     return () => { globalSetOpen = () => {}; };
@@ -42,8 +50,11 @@ export function GlobalSearch() {
 
   useEffect(() => {
     if (open) {
-      setRecent(searchService.getRecent());
-      setTrending(searchService.getTrending());
+      try {
+        setRecent(JSON.parse(localStorage.getItem('ga_recent_searches') || '[]'));
+      } catch {
+        setRecent([]);
+      }
       setQuery("");
       setResults([]);
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -51,20 +62,60 @@ export function GlobalSearch() {
   }, [open]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query.trim()) {
-        setResults(searchService.query(query));
+    if (!query.trim()) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const timer = setTimeout(async () => {
+      try {
+        // Query both local database games and IGDB
+        const localRes = await gamesApi.search(query).catch(() => ({ games: [] }));
+        const localGames = (localRes.games || []).map((g: Game) => ({
+          id: g.id,
+          title: g.title,
+          subtitle: `${g.genre} • ${g.platform}`,
+          imageUrl: g.coverImage,
+          slug: g.slug,
+          rating: g.rating,
+          type: "game" as const,
+        }));
+
+        setResults(localGames.slice(0, 8));
         setSelectedIndex(0);
-      } else {
+      } catch {
         setResults([]);
+      } finally {
+        setLoading(false);
       }
-    }, 300);
+    }, 250);
+
     return () => clearTimeout(timer);
   }, [query]);
 
+  const saveRecent = (q: string) => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('ga_recent_searches') || '[]');
+      const updated = [q, ...stored.filter((r: string) => r !== q)].slice(0, 5);
+      localStorage.setItem('ga_recent_searches', JSON.stringify(updated));
+    } catch {}
+  };
+
+  const handleSelectGame = (slug?: string, titleToSave?: string) => {
+    if (titleToSave) saveRecent(titleToSave);
+    setOpen(false);
+    if (slug) {
+      setLocation(`/library/${slug}`);
+    } else {
+      setLocation(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
   const handleSearch = (q: string) => {
     if (!q.trim()) return;
-    searchService.saveRecent(q);
+    saveRecent(q);
     setOpen(false);
     setLocation(`/search?q=${encodeURIComponent(q)}`);
   };
@@ -164,40 +215,50 @@ export function GlobalSearch() {
                     </div>
                   </div>
                 </div>
-              ) : (
+              ) : loading ? (
+                <div className="flex items-center justify-center py-12 gap-3 text-red-500">
+                  <Loader2 className="animate-spin" size={24} />
+                  <span className="font-rajdhani uppercase tracking-widest text-sm font-bold text-gray-400">Querying Nexus Database...</span>
+                </div>
+              ) : results.length > 0 ? (
                 <div className="space-y-1">
-                  {results.length > 0 ? (
-                    results.map((r, i) => (
-                      <div 
-                        key={r.id} 
-                        className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors ${selectedIndex === i ? 'bg-red-950/40 border border-red-500/30' : 'hover:bg-white/5 border border-transparent'}`}
-                        onClick={() => handleSearch(r.title)}
-                        onMouseEnter={() => setSelectedIndex(i)}
-                      >
-                        <div className="w-12 h-16 shrink-0 rounded overflow-hidden bg-black/50">
-                          <img src={r.imageUrl} alt={r.title} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-orbitron font-bold text-white truncate text-sm mb-1">{r.title}</div>
-                          <div className="flex items-center gap-2 font-rajdhani text-xs text-gray-400 font-semibold tracking-wider">
-                            <span className="flex items-center gap-1 text-red-400">{getIcon(r.type)} {r.type.toUpperCase()}</span>
-                            <span>•</span>
-                            <span className="truncate">{r.subtitle}</span>
-                          </div>
-                        </div>
-                        {r.meta && (
-                          <div className="font-inter text-xs text-yellow-400 shrink-0 flex items-center gap-1">
-                            ⭐ {r.meta}
-                          </div>
-                        )}
+                  {results.map((r, i) => (
+                    <div 
+                      key={r.id} 
+                      className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors ${selectedIndex === i ? 'bg-red-950/40 border border-red-500/30' : 'hover:bg-white/5 border border-transparent'}`}
+                      onClick={() => handleSelectGame(r.slug, r.title)}
+                      onMouseEnter={() => setSelectedIndex(i)}
+                    >
+                      <div className="w-12 h-16 shrink-0 rounded overflow-hidden">
+                        <GameMedia src={r.imageUrl} alt={r.title} title={r.title} aspectRatio="3/4" />
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-12">
-                      <Search size={48} className="mx-auto text-white/20 mb-4" />
-                      <p className="font-rajdhani text-gray-400 font-semibold tracking-widest uppercase">No results found for "{query}"</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-orbitron font-bold text-white truncate text-sm mb-1">{r.title}</div>
+                        <div className="flex items-center gap-2 font-rajdhani text-xs text-gray-400 font-semibold tracking-wider">
+                          <span className="flex items-center gap-1 text-red-400"><Gamepad2 size={12} /> GAME</span>
+                          <span>•</span>
+                          <span className="truncate">{r.subtitle}</span>
+                        </div>
+                      </div>
+                      {r.rating !== undefined && r.rating > 0 && (
+                        <div className="font-orbitron text-xs text-yellow-400 shrink-0 flex items-center gap-1">
+                          <Star size={12} fill="currentColor" /> {r.rating.toFixed(1)}
+                        </div>
+                      )}
+                      <ChevronRight size={16} className="text-gray-500" />
                     </div>
-                  )}
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Search size={48} className="mx-auto text-white/20 mb-4" />
+                  <p className="font-rajdhani text-gray-400 font-semibold tracking-widest uppercase">No games found for "{query}"</p>
+                  <button
+                    onClick={() => handleSearch(query)}
+                    className="mt-4 px-4 py-2 bg-red-600/30 hover:bg-red-600/50 text-red-300 border border-red-500/30 rounded font-rajdhani uppercase text-xs font-bold tracking-wider transition-colors cursor-pointer"
+                  >
+                    Search full catalog
+                  </button>
                 </div>
               )}
             </div>

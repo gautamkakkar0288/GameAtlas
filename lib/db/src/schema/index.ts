@@ -7,3 +7,4 @@ export * from "./notifications.js";
 export * from "./posts.js";
 export * from "./userPreferences.js";
 export * from "./gamerDna.js";
+export * from "./platforms.js";

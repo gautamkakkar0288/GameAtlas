@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") || "/api";
 
 function getToken(): string | null {
   return localStorage.getItem("gameatlas_token");
@@ -91,9 +91,39 @@ export const authApi = {
   login: (body: { email: string; password: string }) =>
     request<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
 
+  google: (body: { email: string; name?: string; googleId?: string; avatarUrl?: string }) =>
+    request<AuthResponse>("/auth/google", { method: "POST", body: JSON.stringify(body) }),
+
   me: () => request<{ user: AuthUser }>("/auth/me"),
 
   logout: () => request<{ message: string }>("/auth/logout", { method: "POST" }),
+};
+
+// ── Platforms ───────────────────────────────────────────────────────────────
+
+export interface ConnectedAccount {
+  id: number;
+  provider: string;
+  externalUserId: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  profileUrl: string | null;
+  status: string;
+  lastSyncedAt: string | null;
+  connectedAt: string;
+}
+
+export const platformsApi = {
+  getAccounts: () => request<{ accounts: ConnectedAccount[] }>("/platforms/accounts"),
+  connect: (body: { provider: string; externalUserId: string; displayName?: string }) =>
+    request<{ account: ConnectedAccount }>("/platforms/connect", { method: "POST", body: JSON.stringify(body) }),
+  sync: (provider: string) =>
+    request<{ result: { provider: string; gamesSynced: number; matchedGameAtlasGames: number; lastSyncedAt: string } }>(
+      `/platforms/sync/${provider}`,
+      { method: "POST" }
+    ),
+  disconnect: (provider: string) =>
+    request<{ message: string }>(`/platforms/disconnect/${provider}`, { method: "DELETE" }),
 };
 
 // ── Games ────────────────────────────────────────────────────────────────────
