@@ -155,7 +155,7 @@ export async function googleAuth(req: Request, res: ExpressResponse, next: NextF
     }
 
     // 1. Verify ID Token with Google
-    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    const response = (await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`)) as any;
     if (!response.ok) {
       throw createError("Invalid Google ID token", 401, "INVALID_GOOGLE_TOKEN");
     }
