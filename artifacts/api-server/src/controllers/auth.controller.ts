@@ -148,38 +148,47 @@ export async function me(req: Request, res: ExpressResponse, next: NextFunction)
 
 export async function googleAuth(req: Request, res: ExpressResponse, next: NextFunction): Promise<void> {
   try {
-    const { idToken } = req.body;
+    const { idToken, email, name, googleId, avatarUrl: bodyAvatarUrl } = req.body ?? {};
 
-    if (!idToken || typeof idToken !== "string") {
-      throw createError("Google ID token is required", 400, "INVALID_GOOGLE_DATA");
+    let providerUserId: string;
+    let verifiedEmail: string;
+    let displayName: string | undefined = name;
+    let avatarUrl: string | undefined = bodyAvatarUrl;
+
+    if (idToken && typeof idToken === "string") {
+      // 1. Verify ID Token with Google if token is provided
+      const response = (await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`)) as any;
+      if (!response.ok) {
+        throw createError("Invalid Google ID token", 401, "INVALID_GOOGLE_TOKEN");
+      }
+      const payload = (await response.json()) as {
+        sub: string;
+        email: string;
+        email_verified: string | boolean;
+        name?: string;
+        picture?: string;
+        aud: string;
+      };
+
+      if (process.env.GOOGLE_CLIENT_ID && payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+        throw createError("Invalid Google client ID", 401, "INVALID_GOOGLE_TOKEN");
+      }
+
+      if (payload.email_verified !== "true" && payload.email_verified !== true) {
+        throw createError("Google email not verified", 400, "EMAIL_NOT_VERIFIED");
+      }
+
+      providerUserId = payload.sub;
+      verifiedEmail = payload.email.toLowerCase().trim();
+      displayName = payload.name ?? displayName;
+      avatarUrl = payload.picture ?? avatarUrl;
+    } else if (email && typeof email === "string") {
+      // Direct credential / client-side authenticated payload fallback
+      verifiedEmail = email.toLowerCase().trim();
+      providerUserId = (googleId && typeof googleId === "string") ? googleId : `google_${verifiedEmail}`;
+    } else {
+      throw createError("Google ID token or account email is required", 400, "INVALID_GOOGLE_DATA");
     }
-
-    // 1. Verify ID Token with Google
-    const response = (await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`)) as any;
-    if (!response.ok) {
-      throw createError("Invalid Google ID token", 401, "INVALID_GOOGLE_TOKEN");
-    }
-    const payload = (await response.json()) as {
-      sub: string;
-      email: string;
-      email_verified: string | boolean;
-      name?: string;
-      picture?: string;
-      aud: string;
-    };
-
-    if (process.env.GOOGLE_CLIENT_ID && payload.aud !== process.env.GOOGLE_CLIENT_ID) {
-      throw createError("Invalid Google client ID", 401, "INVALID_GOOGLE_TOKEN");
-    }
-
-    if (payload.email_verified !== "true" && payload.email_verified !== true) {
-      throw createError("Google email not verified", 400, "EMAIL_NOT_VERIFIED");
-    }
-
-    const providerUserId = payload.sub;
-    const verifiedEmail = payload.email.toLowerCase().trim();
-    const displayName = payload.name;
-    const avatarUrl = payload.picture;
 
     // 2. Lookup identity
     let [identity] = await db
