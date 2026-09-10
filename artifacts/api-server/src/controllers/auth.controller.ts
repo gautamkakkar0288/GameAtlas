@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from "express-serve-static-core";
+import type { Request, Response as ExpressResponse, NextFunction } from "express-serve-static-core";
 import bcrypt from "bcryptjs";
 import { db, usersTable, userIdentitiesTable } from "../../../../lib/db/src/index.js";
 import { eq, and } from "../../../../lib/db/src/index.js";
@@ -6,7 +6,7 @@ import { signToken } from "../lib/jwt.js";
 import { registerSchema, loginSchema } from "../../../../lib/db/src/schema/index.js";
 import { createError } from "../middleware/errorHandler.js";
 
-export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function register(req: Request, res: ExpressResponse, next: NextFunction): Promise<void> {
   try {
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -81,7 +81,7 @@ export async function register(req: Request, res: Response, next: NextFunction):
   }
 }
 
-export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function login(req: Request, res: ExpressResponse, next: NextFunction): Promise<void> {
   try {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -115,7 +115,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
   }
 }
 
-export async function me(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function me(req: Request, res: ExpressResponse, next: NextFunction): Promise<void> {
   try {
     const [user] = await db
       .select({
@@ -146,7 +146,7 @@ export async function me(req: Request, res: Response, next: NextFunction): Promi
   }
 }
 
-export async function googleAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function googleAuth(req: Request, res: ExpressResponse, next: NextFunction): Promise<void> {
   try {
     const { idToken } = req.body;
 
@@ -155,7 +155,7 @@ export async function googleAuth(req: Request, res: Response, next: NextFunction
     }
 
     // 1. Verify ID Token with Google
-    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    const response: globalThis.Response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
     if (!response.ok) {
       throw createError("Invalid Google ID token", 401, "INVALID_GOOGLE_TOKEN");
     }
