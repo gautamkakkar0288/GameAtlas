@@ -1,5 +1,5 @@
 import type { Request, Response as ExpressResponse, NextFunction } from "express-serve-static-core";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import { db, usersTable, userIdentitiesTable } from "../../../../lib/db/src/index.js";
 import { eq, and } from "../../../../lib/db/src/index.js";
 import { signToken } from "../lib/jwt.js";
