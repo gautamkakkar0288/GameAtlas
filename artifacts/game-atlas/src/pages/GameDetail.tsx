@@ -8,6 +8,19 @@ import { gamesApi, libraryApi, reviewsApi, type Review, type Achievement } from 
 import { igdbApi, type IGDBGame } from "@/lib/igdb";
 import { GameMedia } from "@/components/shared/GameMedia";
 import { auth } from "@/lib/auth";
+import { SiSteam, SiEpicgames, SiRiotgames } from 'react-icons/si';
+import { Gamepad2 } from 'lucide-react';
+
+function PlatformIcon({ p, className = '' }: { p: string; className?: string }) {
+  switch (p) {
+    case 'Steam': return <SiSteam className={`text-[#66c0f4] ${className}`} />;
+    case 'Epic': return <SiEpicgames className={`text-white ${className}`} />;
+    case 'Riot': return <SiRiotgames className={`text-[#eb0029] ${className}`} />;
+    case 'Xbox': return <Gamepad2 className={`text-[#107c10] ${className}`} />;
+    case 'PlayStation': return <Gamepad2 className={`text-[#003791] ${className}`} />;
+    default: return <Gamepad2 className={`text-gray-400 ${className}`} />;
+  }
+}
 
 function SkeletonBlock({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-white/5 rounded ${className}`} />;
@@ -401,6 +414,10 @@ export default function GameDetail() {
                       <BookOpen size={11} /> In Library
                     </span>
                   )}
+                  <span className="px-3 py-1 bg-white/5 border border-white/10 rounded font-rajdhani text-xs font-bold text-gray-300 uppercase tracking-widest flex items-center gap-2">
+                    <PlatformIcon p={game.platform} className="w-3 h-3" />
+                    {game.platform}
+                  </span>
                 </div>
 
                 <h1 className="font-orbitron text-4xl md:text-6xl font-black text-white tracking-wider drop-shadow-lg leading-none">

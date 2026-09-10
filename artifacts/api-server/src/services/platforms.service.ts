@@ -1,4 +1,4 @@
-import { db, userPlatformAccountsTable, gamePlatformMappingsTable, userGameActivityTable, gamesTable } from "../../../../lib/db/src/index.js";
+import { db, userPlatformAccountsTable, gamePlatformMappingsTable, userGameActivityTable, gamesTable, unmatchedProviderGamesTable, syncHistoryTable } from "../../../../lib/db/src/index.js";
 import { eq, and, sql, desc } from "../../../../lib/db/src/index.js";
 import { logger } from "../lib/logger.js";
 
@@ -24,38 +24,69 @@ export interface SyncResult {
 /**
  * Provider interface for external gaming ecosystems (Steam, Epic, PlayStation, Xbox)
  */
+export type ProviderStatus =
+  | "available"
+  | "configuration_required"
+  | "coming_soon"
+  | "temporarily_unavailable"
+  | "connected"
+  | "error";
+
+export interface PlatformCapabilities {
+  identity: boolean;
+  library: boolean;
+  playtime: boolean;
+  achievements: boolean;
+  wishlist: boolean;
+}
+
 export interface PlatformProvider {
   providerId: string;
+  status: ProviderStatus;
+  capabilities: PlatformCapabilities;
   getProfile(externalUserId: string): Promise<{ displayName: string; avatarUrl?: string; profileUrl?: string }>;
   getOwnedGames(externalUserId: string): Promise<Array<{ externalGameId: string; name: string; playtimeMinutes: number; lastPlayedAt?: Date }>>;
 }
 
 export class SteamProvider implements PlatformProvider {
   providerId = "steam";
+  status: ProviderStatus = process.env.STEAM_API_KEY ? "available" : "configuration_required";
+  capabilities: PlatformCapabilities = { identity: true, library: true, playtime: true, achievements: true, wishlist: false };
+  private apiKey = process.env.STEAM_API_KEY;
 
   async getProfile(steamId: string) {
-    // In production with STEAM_API_KEY, queries ISteamUser/GetPlayerSummaries/v0002
+    if (!this.apiKey) throw new Error("STEAM_API_KEY not configured");
+
+    const response = await fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${this.apiKey}&steamids=${steamId}`);
+    const data = (await response.json()) as any;
+    const player = data.response.players[0];
+
     return {
-      displayName: `SteamPlayer_${steamId.slice(-4)}`,
-      avatarUrl: "https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg",
-      profileUrl: `https://steamcommunity.com/profiles/${steamId}`,
+      displayName: player.personaname,
+      avatarUrl: player.avatarfull,
+      profileUrl: player.profileurl,
     };
   }
 
-  async getOwnedGames(_steamId: string) {
-    // Returns canonical external mapping sample or real games
-    return [
-      { externalGameId: "1245620", name: "Elden Ring", playtimeMinutes: 4800, lastPlayedAt: new Date() },
-      { externalGameId: "1091500", name: "Cyberpunk 2077", playtimeMinutes: 3200, lastPlayedAt: new Date(Date.now() - 86400000 * 2) },
-      { externalGameId: "1151640", name: "Horizon Zero Dawn", playtimeMinutes: 1900, lastPlayedAt: new Date(Date.now() - 86400000 * 7) },
-      { externalGameId: "367520", name: "Hollow Knight", playtimeMinutes: 2400, lastPlayedAt: new Date(Date.now() - 86400000 * 14) },
-      { externalGameId: "1145360", name: "Hades", playtimeMinutes: 3600, lastPlayedAt: new Date(Date.now() - 86400000 * 3) },
-    ];
+  async getOwnedGames(steamId: string) {
+    if (!this.apiKey) throw new Error("STEAM_API_KEY not configured");
+
+    const response = await fetch(`https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${this.apiKey}&steamid=${steamId}&include_appinfo=true&format=json`);
+    const data = (await response.json()) as any;
+
+    return (data.response.games || []).map((game: any) => ({
+      externalGameId: game.appid.toString(),
+      name: game.name,
+      playtimeMinutes: game.playtime_forever,
+      lastPlayedAt: game.rtime_last_played ? new Date(game.rtime_last_played * 1000) : undefined,
+    }));
   }
 }
 
 export class EpicProvider implements PlatformProvider {
   providerId = "epic";
+  status: ProviderStatus = "configuration_required";
+  capabilities: PlatformCapabilities = { identity: true, library: true, playtime: true, achievements: false, wishlist: false };
 
   async getProfile(accountId: string) {
     return {
@@ -74,9 +105,37 @@ export class EpicProvider implements PlatformProvider {
   }
 }
 
+export class XboxProvider implements PlatformProvider {
+  providerId = "xbox";
+  status: ProviderStatus = "configuration_required";
+  capabilities: PlatformCapabilities = { identity: true, library: true, playtime: true, achievements: true, wishlist: false };
+
+  async getProfile(accountId: string) {
+    return { displayName: "Xbox User" };
+  }
+  async getOwnedGames(accountId: string) {
+    return [];
+  }
+}
+
+export class PlayStationProvider implements PlatformProvider {
+  providerId = "playstation";
+  status: ProviderStatus = "coming_soon";
+  capabilities: PlatformCapabilities = { identity: false, library: false, playtime: false, achievements: false, wishlist: false };
+
+  async getProfile(accountId: string) {
+    return { displayName: "PlayStation User" };
+  }
+  async getOwnedGames(accountId: string) {
+    return [];
+  }
+}
+
 const providers: Record<string, PlatformProvider> = {
   steam: new SteamProvider(),
   epic: new EpicProvider(),
+  xbox: new XboxProvider(),
+  playstation: new PlayStationProvider(),
 };
 
 export const platformsService = {
@@ -167,7 +226,16 @@ export const platformsService = {
     }
 
     let matchedCount = 0;
+    let unmatchedCount = 0;
     const now = new Date();
+
+    // Record sync start
+    const [syncRecord] = await db.insert(syncHistoryTable).values({
+      userId,
+      provider: providerName,
+      status: "in_progress",
+      startedAt: now,
+    }).returning();
 
     // Fetch existing GameAtlas games to map canonical titles
     const allGames = await db.select().from(gamesTable);
@@ -219,6 +287,26 @@ export const platformsService = {
               syncedAt: now,
             },
           });
+      } else {
+        unmatchedCount++;
+        // Record unmatched game
+        await db
+          .insert(unmatchedProviderGamesTable)
+          .values({
+            userId,
+            provider: providerName,
+            externalGameId: item.externalGameId,
+            externalName: item.name,
+            playtimeMinutes: item.playtimeMinutes,
+            rawMetadata: { lastPlayedAt: item.lastPlayedAt },
+          })
+          .onConflictDoUpdate({
+            target: [unmatchedProviderGamesTable.userId, unmatchedProviderGamesTable.provider, unmatchedProviderGamesTable.externalGameId],
+            set: {
+              playtimeMinutes: item.playtimeMinutes,
+              updatedAt: now,
+            },
+          });
       }
     }
 
@@ -227,6 +315,15 @@ export const platformsService = {
       .update(userPlatformAccountsTable)
       .set({ lastSyncedAt: now, status: "connected" })
       .where(eq(userPlatformAccountsTable.id, account.id));
+
+    // Update sync record
+    await db.update(syncHistoryTable).set({
+      status: "success",
+      gamesFound: ownedGames.length,
+      gamesMatched: matchedCount,
+      gamesUnmatched: unmatchedCount,
+      completedAt: new Date(),
+    }).where(eq(syncHistoryTable.id, syncRecord.id));
 
     return {
       provider: providerName,

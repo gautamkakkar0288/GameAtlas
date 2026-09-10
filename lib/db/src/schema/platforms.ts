@@ -72,6 +72,51 @@ export const userGameActivityTable = pgTable(
   ]
 );
 
+export const unmatchedProviderGamesTable = pgTable(
+  "unmatched_provider_games",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(),
+    externalGameId: text("external_game_id").notNull(),
+    externalName: text("external_name").notNull(),
+    playtimeMinutes: integer("playtime_minutes").default(0).notNull(),
+    rawMetadata: jsonb("raw_metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("unmatched_games_user_idx").on(table.userId),
+    unique("user_provider_external_game_unique").on(table.userId, table.provider, table.externalGameId),
+  ]
+);
+
+export const syncHistoryTable = pgTable(
+  "sync_history",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(),
+    status: text("status").notNull(), // 'in_progress' | 'success' | 'partial' | 'failed'
+    gamesFound: integer("games_found").default(0).notNull(),
+    gamesMatched: integer("games_matched").default(0).notNull(),
+    gamesUnmatched: integer("games_unmatched").default(0).notNull(),
+    errorMessage: text("error_message"),
+    startedAt: timestamp("started_at").defaultNow().notNull(),
+    completedAt: timestamp("completed_at"),
+  },
+  (table) => [
+    index("sync_history_user_idx").on(table.userId),
+    index("sync_history_provider_idx").on(table.provider),
+  ]
+);
+
 export type UserPlatformAccount = typeof userPlatformAccountsTable.$inferSelect;
 export type GamePlatformMapping = typeof gamePlatformMappingsTable.$inferSelect;
 export type UserGameActivity = typeof userGameActivityTable.$inferSelect;
+export type UnmatchedProviderGame = typeof unmatchedProviderGamesTable.$inferSelect;
+export type SyncHistoryRecord = typeof syncHistoryTable.$inferSelect;

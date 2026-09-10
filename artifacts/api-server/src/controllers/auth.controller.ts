@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express-serve-static-core";
 import bcrypt from "bcryptjs";
-import { db, usersTable } from "../../../../lib/db/src/index.js";
-import { eq } from "../../../../lib/db/src/index.js";
+import { db, usersTable, userIdentitiesTable } from "../../../../lib/db/src/index.js";
+import { eq, and } from "../../../../lib/db/src/index.js";
 import { signToken } from "../lib/jwt.js";
 import { registerSchema, loginSchema } from "../../../../lib/db/src/schema/index.js";
 import { createError } from "../middleware/errorHandler.js";
@@ -65,6 +65,13 @@ export async function register(req: Request, res: Response, next: NextFunction):
         favoriteGame: usersTable.favoriteGame,
         createdAt: usersTable.createdAt,
       });
+
+    await db.insert(userIdentitiesTable).values({
+      userId: user.id,
+      provider: "password",
+      providerUserId: user.id.toString(),
+      providerEmail: user.email,
+    });
 
     const token = signToken({ userId: user.id, email: user.email, username: user.username });
 
@@ -141,91 +148,104 @@ export async function me(req: Request, res: Response, next: NextFunction): Promi
 
 export async function googleAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { email, name, googleId, avatarUrl } = req.body ?? {};
+    const { idToken } = req.body;
 
-    if (!email || typeof email !== "string") {
-      throw createError("Google account email is required", 400, "INVALID_GOOGLE_DATA");
+    if (!idToken || typeof idToken !== "string") {
+      throw createError("Google ID token is required", 400, "INVALID_GOOGLE_DATA");
     }
 
-    const cleanEmail = email.toLowerCase().trim();
-    const cleanGoogleId = googleId && typeof googleId === "string" ? googleId.trim() : null;
+    // 1. Verify ID Token with Google
+    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    if (!response.ok) {
+      throw createError("Invalid Google ID token", 401, "INVALID_GOOGLE_TOKEN");
+    }
+    const payload = (await response.json()) as {
+      sub: string;
+      email: string;
+      email_verified: string | boolean;
+      name?: string;
+      picture?: string;
+      aud: string;
+    };
 
-    // 1. Try finding by googleId first
-    let user = cleanGoogleId
-      ? (
-          await db
-            .select()
-            .from(usersTable)
-            .where(eq(usersTable.googleId, cleanGoogleId))
-            .limit(1)
-        )[0]
-      : null;
+    if (process.env.GOOGLE_CLIENT_ID && payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+      throw createError("Invalid Google client ID", 401, "INVALID_GOOGLE_TOKEN");
+    }
 
-    // 2. If not found by googleId, check by email to link accounts
-    if (!user) {
-      const [existingUser] = await db
-        .select()
-        .from(usersTable)
-        .where(eq(usersTable.email, cleanEmail))
-        .limit(1);
+    if (payload.email_verified !== "true" && payload.email_verified !== true) {
+      throw createError("Google email not verified", 400, "EMAIL_NOT_VERIFIED");
+    }
 
-      if (existingUser) {
-        // Link Google ID and avatar to existing account if not yet set
-        const updateData: Partial<typeof usersTable.$inferInsert> = {};
-        if (cleanGoogleId && !existingUser.googleId) updateData.googleId = cleanGoogleId;
-        if (avatarUrl && !existingUser.avatarUrl) updateData.avatarUrl = avatarUrl;
+    const providerUserId = payload.sub;
+    const verifiedEmail = payload.email.toLowerCase().trim();
+    const displayName = payload.name;
+    const avatarUrl = payload.picture;
 
-        if (Object.keys(updateData).length > 0) {
-          const [updated] = await db
-            .update(usersTable)
-            .set(updateData)
-            .where(eq(usersTable.id, existingUser.id))
-            .returning();
-          user = updated;
-        } else {
-          user = existingUser;
+    // 2. Lookup identity
+    let [identity] = await db
+      .select()
+      .from(userIdentitiesTable)
+      .where(and(eq(userIdentitiesTable.provider, "google"), eq(userIdentitiesTable.providerUserId, providerUserId)))
+      .limit(1);
+
+    let user;
+
+    if (identity) {
+      [user] = await db.select().from(usersTable).where(eq(usersTable.id, identity.userId)).limit(1);
+    } else {
+      // 3. Check by email to link accounts
+      [user] = await db.select().from(usersTable).where(eq(usersTable.email, verifiedEmail)).limit(1);
+
+      if (user) {
+        // Link Google identity
+        await db.insert(userIdentitiesTable).values({
+          userId: user.id,
+          provider: "google",
+          providerUserId,
+          providerEmail: verifiedEmail,
+        });
+      } else {
+        // 4. Create new user
+        let baseUsername = (verifiedEmail.split("@")[0] || "player").replace(/[^a-zA-Z0-9_]/g, "");
+        if (baseUsername.length < 3) baseUsername = `player_${Math.floor(1000 + Math.random() * 9000)}`;
+
+        let finalUsername = baseUsername;
+        const [takenUsername] = await db
+          .select({ id: usersTable.id })
+          .from(usersTable)
+          .where(eq(usersTable.username, finalUsername))
+          .limit(1);
+
+        if (takenUsername) {
+          finalUsername = `${baseUsername.slice(0, 20)}_${Math.floor(100 + Math.random() * 900)}`;
         }
+
+        const randomPassword = Math.random().toString(36).slice(-12) + "Nexus$99";
+        const passwordHash = await bcrypt.hash(randomPassword, 10);
+        const avatarColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 45%)`;
+
+        [user] = await db
+          .insert(usersTable)
+          .values({
+            email: verifiedEmail,
+            username: finalUsername,
+            passwordHash,
+            avatarUrl: avatarUrl || null,
+            displayName: displayName || baseUsername,
+            avatarColor,
+          })
+          .returning();
+
+        await db.insert(userIdentitiesTable).values({
+          userId: user.id,
+          provider: "google",
+          providerUserId,
+          providerEmail: verifiedEmail,
+        });
       }
     }
 
-    // 3. If still no user, create a new one
-    if (!user) {
-      let baseUsername = (cleanEmail.split("@")[0] || "player").replace(/[^a-zA-Z0-9_]/g, "");
-      if (baseUsername.length < 3) baseUsername = `player_${Math.floor(1000 + Math.random() * 9000)}`;
-
-      let finalUsername = baseUsername;
-      const [takenUsername] = await db
-        .select({ id: usersTable.id })
-        .from(usersTable)
-        .where(eq(usersTable.username, finalUsername))
-        .limit(1);
-
-      if (takenUsername) {
-        finalUsername = `${baseUsername.slice(0, 20)}_${Math.floor(100 + Math.random() * 900)}`;
-      }
-
-      const randomPassword = Math.random().toString(36).slice(-12) + "Nexus$99";
-      const passwordHash = await bcrypt.hash(randomPassword, 10);
-      const avatarColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 45%)`;
-
-      const [newUser] = await db
-        .insert(usersTable)
-        .values({
-          email: cleanEmail,
-          username: finalUsername,
-          passwordHash,
-          googleId: cleanGoogleId,
-          avatarUrl: avatarUrl || null,
-          displayName: name || baseUsername,
-          avatarColor,
-          level: 1,
-          xp: 0,
-          rankTier: "Bronze",
-        })
-        .returning();
-
-      user = newUser;
-    }
+    if (!user) throw createError("Authentication failed", 500, "AUTH_FAILED");
 
     const token = signToken({
       userId: user.id,

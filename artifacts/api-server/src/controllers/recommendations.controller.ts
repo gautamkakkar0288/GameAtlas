@@ -1,43 +1,13 @@
 import type { Request, Response, NextFunction } from "express-serve-static-core";
 import { db, gamesTable, userGameLibraryTable } from "../../../../lib/db/src/index.js";
-import { eq, inArray } from "../../../../lib/db/src/index.js";
+import { eq } from "../../../../lib/db/src/index.js";
+import { recommendationsService } from "../services/recommendations.service.js";
 
 export async function getPersonalRecommendations(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.user!.userId;
-
-    const libraryEntries = await db
-      .select({ gameId: userGameLibraryTable.gameId })
-      .from(userGameLibraryTable)
-      .where(eq(userGameLibraryTable.userId, userId));
-
-    const libraryGameIds = libraryEntries.map((e) => e.gameId);
-    const genreFrequency: Record<string, number> = {};
-
-    if (libraryGameIds.length > 0) {
-      const libraryGames = await db
-        .select({ genre: gamesTable.genre })
-        .from(gamesTable)
-        .where(inArray(gamesTable.id, libraryGameIds));
-      for (const g of libraryGames) {
-        genreFrequency[g.genre] = (genreFrequency[g.genre] ?? 0) + 1;
-      }
-    }
-
-    const allGames = await db.select().from(gamesTable);
-    const librarySet = new Set(libraryGameIds);
-    const candidates = allGames.filter((g) => !librarySet.has(g.id));
-
-    const scored = candidates
-      .map((game) => {
-        let score = game.rating * 2;
-        score += (genreFrequency[game.genre] ?? 0) * 3;
-        return { ...game, _score: score };
-      })
-      .sort((a, b) => b._score - a._score)
-      .map(({ _score: _s, ...game }) => game);
-
-    res.json({ recommendations: scored.slice(0, 8) });
+    const recommendations = await recommendationsService.getPersonalRecommendations(userId);
+    res.json({ recommendations });
   } catch (err) {
     next(err);
   }

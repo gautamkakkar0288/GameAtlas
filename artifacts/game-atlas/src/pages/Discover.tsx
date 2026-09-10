@@ -133,6 +133,12 @@ export default function Discover() {
     staleTime: 60_000,
   });
 
+  const { data: personalizedData } = useQuery({
+    queryKey: ['personalized'],
+    queryFn: () => recommendationsApi.forMe(),
+    staleTime: 60_000,
+  });
+
   const { data: libraryData } = useQuery({
     queryKey: ['library'],
     queryFn: () => libraryApi.get(),
@@ -173,6 +179,7 @@ export default function Discover() {
   });
 
   const trending = trendingData?.games ?? filtered.slice(0, 8);
+  const personalized = personalizedData?.recommendations ?? [];
   const topRated = [...filtered].sort((a, b) => b.rating - a.rating).slice(0, 8);
   const newReleases = [...filtered].sort((a, b) => b.releaseYear - a.releaseYear).slice(0, 8);
   const featured = allGames.slice(0, 5);
@@ -339,6 +346,11 @@ export default function Discover() {
             </div>
           ) : (
             <>
+              {personalized.length > 0 && (
+                <SectionRow title="Personalized for You" subtitle="Based on your Gaming DNA" icon={Sparkles} badge="DNA">
+                  {personalized.map((g) => <GameCard key={g.id} game={g} inLibrary={libraryGameIds.has(g.id)} onAdd={handleAdd} />)}
+                </SectionRow>
+              )}
               {trending.length > 0 && (
                 <SectionRow title="Trending Now" subtitle="Most played this week" icon={TrendingUp}>
                   {trending.map((g) => <GameCard key={g.id} game={g} inLibrary={libraryGameIds.has(g.id)} onAdd={handleAdd} />)}

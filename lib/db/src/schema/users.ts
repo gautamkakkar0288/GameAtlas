@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, jsonb, index, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -20,6 +20,26 @@ export const usersTable = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const userIdentitiesTable = pgTable(
+  "user_identities",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(), // 'password' | 'google' | 'steam' | 'epic' | 'microsoft' | 'playstation'
+    providerUserId: text("provider_user_id").notNull(),
+    providerEmail: text("provider_email"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("user_identities_user_idx").on(table.userId),
+    unique("provider_user_id_unique").on(table.provider, table.providerUserId),
+  ]
+);
 
 export const insertUserSchema = createInsertSchema(usersTable).omit({
   id: true,

@@ -12,6 +12,12 @@ export function PageTransition({ children }: PageTransitionProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
+      style={{
+        '@media (prefers-reduced-motion: reduce)': {
+          transition: 'none',
+          animation: 'none',
+        }
+      } as any}
     >
       {children}
     </motion.div>
